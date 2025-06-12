@@ -15,9 +15,9 @@ export const {
   getSession,
 } = authClient;
 
-// Export organization methods directly from the client
+// Export organization methods
 export const useActiveOrganization = authClient.useActiveOrganization;
 export const useListOrganizations = authClient.useListOrganizations;
-export const createOrganization = authClient.createOrganization;
-export const updateOrganization = authClient.updateOrganization;
-export const deleteOrganization = authClient.deleteOrganization;
+export const createOrganization = authClient.organization.create;
+export const updateOrganization = authClient.organization.update;
+export const deleteOrganization = authClient.organization.delete;

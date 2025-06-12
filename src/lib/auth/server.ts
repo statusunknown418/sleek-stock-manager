@@ -12,9 +12,7 @@ export const auth = betterAuth({
     enabled: true,
   },
   plugins: [
-    organization({
-      ac: true,
-    }),
+    organization(),
   ],
 });
 
