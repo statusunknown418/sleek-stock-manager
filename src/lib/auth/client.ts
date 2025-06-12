@@ -13,5 +13,12 @@ export const {
   signOut,
   useSession,
   getSession,
-  organization,
 } = authClient;
+
+export const { 
+  useActiveOrganization,
+  useListOrganizations,
+  createOrganization,
+  updateOrganization,
+  deleteOrganization,
+} = authClient.organization;

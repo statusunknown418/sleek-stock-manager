@@ -1,6 +1,6 @@
 
 import { Sidebar } from "./Sidebar";
-import { useSession, organization } from "../../lib/auth/client";
+import { useSession, useActiveOrganization } from "../../lib/auth/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
@@ -10,7 +10,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { data: session } = useSession();
-  const { data: activeOrg } = organization.useActiveOrganization();
+  const { data: activeOrg } = useActiveOrganization();
   const navigate = useNavigate();
 
   useEffect(() => {

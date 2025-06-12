@@ -11,7 +11,7 @@ import {
   Building2,
   LogOut
 } from "lucide-react";
-import { signOut, useSession, organization } from "../../lib/auth/client";
+import { signOut, useSession, useActiveOrganization } from "../../lib/auth/client";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const sidebarItems = [
@@ -27,7 +27,7 @@ export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { data: session } = useSession();
-  const { data: activeOrg } = organization.useActiveOrganization();
+  const { data: activeOrg } = useActiveOrganization();
 
   const handleSignOut = async () => {
     await signOut();

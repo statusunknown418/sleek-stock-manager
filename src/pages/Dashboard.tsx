@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Package, Users, MapPin, TrendingUp, AlertTriangle, DollarSign } from "lucide-react";
 import { AppLayout } from "../components/layout/AppLayout";
-import { organization } from "../lib/auth/client";
+import { useActiveOrganization } from "../lib/auth/client";
 import { trpc } from "../lib/trpc/client";
 
 const StatCard = ({ 
@@ -31,7 +31,7 @@ const StatCard = ({
 );
 
 export function Dashboard() {
-  const { data: activeOrg } = organization.useActiveOrganization();
+  const { data: activeOrg } = useActiveOrganization();
   
   const { data: products } = trpc.products.getAll.useQuery(
     { organizationId: activeOrg?.id || "" },
