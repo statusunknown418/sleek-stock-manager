@@ -18,7 +18,6 @@ export const createTRPCContext = async (opts: { req?: Request }) => {
         user = authResult.user;
       }
     } catch (error) {
-      // Session validation failed
       console.log("Session validation failed:", error);
     }
   }
