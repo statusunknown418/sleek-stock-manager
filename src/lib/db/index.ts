@@ -1,9 +1,21 @@
-
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { type Client, createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 
-const sqlite = new Database("inventory.db");
-export const db = drizzle(sqlite, { schema });
+/**
+ * Cache the database connection in development. This avoids creating a new connection on every HMR
+ * update.
+ */
+const globalForDb = globalThis as unknown as {
+	client: Client | undefined;
+};
 
-export * from "./schema";
+export const client =
+	globalForDb.client ??
+	createClient({
+		url: process.env.DATABASE_URL,
+		authToken: process.env.DATABASE_TOKEN,
+	});
+if (process.env.NODE_ENV !== "production") globalForDb.client = client;
+
+export const db = drizzle(client, { schema });
