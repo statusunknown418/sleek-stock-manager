@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     endpoint: "/api/trpc",
     req: request,
     router: appRouter,
-    createContext: createTRPCContext,
+    createContext: () => createTRPCContext({ req: request }),
   });
 }
 
@@ -17,6 +17,6 @@ export async function POST(request: Request) {
     endpoint: "/api/trpc",
     req: request,
     router: appRouter,
-    createContext: createTRPCContext,
+    createContext: () => createTRPCContext({ req: request }),
   });
 }

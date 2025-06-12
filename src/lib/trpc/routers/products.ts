@@ -1,86 +1,89 @@
 
 import { z } from "zod";
-import { router, protectedProcedure } from "../index";
-import { products, categories, stock } from "../../db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { router, publicProcedure, protectedProcedure } from "../index";
+import { products } from "../../db/schema";
+import { eq, and } from "drizzle-orm";
 
 export const productsRouter = router({
   getAll: protectedProcedure
-    .input(z.object({
-      organizationId: z.string(),
-    }))
+    .input(z.object({ organizationId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db
-        .select({
-          id: products.id,
-          name: products.name,
-          description: products.description,
-          sku: products.sku,
-          barcode: products.barcode,
-          unitPrice: products.unitPrice,
-          costPrice: products.costPrice,
-          minStockLevel: products.minStockLevel,
-          maxStockLevel: products.maxStockLevel,
-          image: products.image,
-          createdAt: products.createdAt,
-          category: {
-            id: categories.id,
-            name: categories.name,
-          },
-        })
-        .from(products)
-        .leftJoin(categories, eq(products.categoryId, categories.id))
-        .where(eq(products.organizationId, input.organizationId))
-        .orderBy(desc(products.createdAt));
+      return ctx.db.select().from(products)
+        .where(eq(products.organizationId, input.organizationId));
     }),
 
   create: protectedProcedure
-    .input(z.object({
+    .input(z.object({ 
       name: z.string().min(1),
-      description: z.string().optional(),
+      organizationId: z.string().min(1),
       sku: z.string().min(1),
+      description: z.string().optional(),
       barcode: z.string().optional(),
       categoryId: z.string().optional(),
-      organizationId: z.string(),
-      unitPrice: z.number().min(0).optional(),
-      costPrice: z.number().min(0).optional(),
-      minStockLevel: z.number().min(0).optional(),
-      maxStockLevel: z.number().min(0).optional(),
+      unitPrice: z.number().optional(),
+      costPrice: z.number().optional(),
+      minStockLevel: z.number().optional(),
+      maxStockLevel: z.number().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const [product] = await ctx.db.insert(products).values(input).returning();
-      return product;
+      return ctx.db.insert(products).values({
+        name: input.name,
+        organizationId: input.organizationId,
+        sku: input.sku,
+        description: input.description,
+        barcode: input.barcode,
+        categoryId: input.categoryId,
+        unitPrice: input.unitPrice,
+        costPrice: input.costPrice,
+        minStockLevel: input.minStockLevel,
+        maxStockLevel: input.maxStockLevel,
+      });
     }),
 
   update: protectedProcedure
-    .input(z.object({
+    .input(z.object({ 
       id: z.string(),
-      name: z.string().min(1).optional(),
+      name: z.string().min(1),
+      organizationId: z.string().min(1),
+      sku: z.string().min(1),
       description: z.string().optional(),
-      sku: z.string().min(1).optional(),
       barcode: z.string().optional(),
       categoryId: z.string().optional(),
-      unitPrice: z.number().min(0).optional(),
-      costPrice: z.number().min(0).optional(),
-      minStockLevel: z.number().min(0).optional(),
-      maxStockLevel: z.number().min(0).optional(),
+      unitPrice: z.number().optional(),
+      costPrice: z.number().optional(),
+      minStockLevel: z.number().optional(),
+      maxStockLevel: z.number().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input;
-      const [product] = await ctx.db
-        .update(products)
-        .set({ ...data, updatedAt: new Date() })
-        .where(eq(products.id, id))
-        .returning();
-      return product;
+      return ctx.db.update(products)
+        .set({ 
+          name: input.name,
+          sku: input.sku,
+          description: input.description,
+          barcode: input.barcode,
+          categoryId: input.categoryId,
+          unitPrice: input.unitPrice,
+          costPrice: input.costPrice,
+          minStockLevel: input.minStockLevel,
+          maxStockLevel: input.maxStockLevel,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(products.id, input.id),
+          eq(products.organizationId, input.organizationId)
+        ));
     }),
 
   delete: protectedProcedure
-    .input(z.object({
+    .input(z.object({ 
       id: z.string(),
+      organizationId: z.string()
     }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(products).where(eq(products.id, input.id));
-      return { success: true };
+      return ctx.db.delete(products)
+        .where(and(
+          eq(products.id, input.id),
+          eq(products.organizationId, input.organizationId)
+        ));
     }),
 });
